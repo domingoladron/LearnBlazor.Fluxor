@@ -1,0 +1,44 @@
+﻿@using Fluxor.Blazor.Store.WeatherUseCase
+@using Fluxor.Blazor.Store
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+@if (WeatherState.Value.IsLoading)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <h5>Weather Results last updated on @_lastUpdated</h5>
+    <button @onclick="FetchWeatherData">Get Weather Data Again</button>
+}
+@code {
+    
+    [Inject] private IState<WeatherState> WeatherState { get; set; }
+    
+    [Inject]
+    private IDispatcher? Dispatcher { get; set; }
+
+    [Inject] private IStateSelection<WeatherState, DateTime> WeatherStateSelection { get; set; }
+
+    private DateTime _lastUpdated;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        _lastUpdated = WeatherState.Value.LastUpdated;
+        WeatherStateSelection.Select(g => g.LastUpdated);
+        WeatherStateSelection.SelectedValueChanged += WeatherForecastsReturned;
+    }
+
+    private void WeatherForecastsReturned(object? sender, DateTime e)
+    {
+        _lastUpdated = WeatherState.Value.LastUpdated;
+    }
+
+
+    private void FetchWeatherData()
+    {
+        Dispatcher?.Dispatch(new FetchDataAction());
+    }
+
+}

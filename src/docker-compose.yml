@@ -1,0 +1,15 @@
+version: '3.4'
+
+services:
+  fluxor.blazor:
+    image: ${DOCKER_REGISTRY-}fluxorblazor
+    build:
+      context: .
+      dockerfile: Fluxor.Blazor/Dockerfile
+
+  sampleapi:
+    image: ${DOCKER_REGISTRY-}sampleapi
+    build:
+      context: .
+      dockerfile: Server/Dockerfile
+
